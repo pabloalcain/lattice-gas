@@ -1,0 +1,16 @@
+None                  % Initial Positions Sample ('None' for random)
+100                   % Side Length
+
+04000                 % Number of Steps
+100                   % Number of Thermalization Steps
+10                    % Number of Correlation Steps
+
+11                    % Temp Steps
+01.0000               % Initial Temperature
+00.0010               % Final Temperature
+
+07                    % Chemical Steps
+01.8000               % Initial Chemical
+01.2000               % Final Chemical
+
+output.xyz            % Output Positions and Vel
