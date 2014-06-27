@@ -142,11 +142,7 @@ class System(object):
             x = R.randint(0, self.lattice.Lx-1)
             y = R.randint(0, self.lattice.Ly-1)
             z = R.randint(0, self.lattice.Lz-1)
-            E0 = self.E
             self.flip(x, y, z)
-            if self.E != E0:
-                if self.E != self.tot_energy():
-                    print "Distintas! :("
             if (i*100 % Nsteps) == 0:
                 print self.E
 
