@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import itertools as it
 import random as R
@@ -135,11 +136,17 @@ class System(object):
             self.N+= dn
     
     def run(self, Nsteps):
+        self.E = self.tot_energy()
+        self.N = self.tot_population()
         for i in xrange(Nsteps):
             x = R.randint(0, self.lattice.Lx-1)
             y = R.randint(0, self.lattice.Ly-1)
             z = R.randint(0, self.lattice.Lz-1)
+            E0 = self.E
             self.flip(x, y, z)
+            if self.E != E0:
+                if self.E != self.tot_energy():
+                    print "Distintas! :("
             if (i*100 % Nsteps) == 0:
                 print self.E
 
@@ -212,12 +219,14 @@ class Lattice(np.ndarray):
         Fill lattice randomly with probability p.
         Not done yet, since I don't know how to cleanly set these values in the lattice
         """
-        for (i, j, k) in it.product(Lx, Ly, Lz):
+        for (i, j, k) in it.product(range(self.Lx), range(self.Ly), range(self.Lz)):
             #I'm still surprised this construction works self[...]
             if R.random() < p: 
-                self[x, y, z] = True
+                self[i, j, k] = True
             else: 
-                self[x, y, z] = False
+                self[i, j, k] = False
+        
+        
 
     def get_status(self, x, y, z):
         if self.bc == "periodic":
