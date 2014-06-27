@@ -1,0 +1,1 @@
+sed 's/F/\ /g' `find data/ -type f -name fina* -printf '%T@ %p\n' | sort -n | tail -2 | cut -f2- -d" "` | sed 's/T/\*/g' | sed 's/$/|/'
