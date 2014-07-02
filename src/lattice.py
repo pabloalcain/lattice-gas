@@ -128,7 +128,7 @@ class System(object):
         # Getting advantage of the autocast bool->integer in Python
         dn = - (self.lattice[x, y, z] - 0.5) * 2 
         de = dn * self.energy_if_occupied(x, y, z)
-        du = de - self.mu * dn
+        du = de + self.mu * dn
 
         if du < 0 or R.random() < np.exp(-du/self.T):
             self.lattice[x, y, z] = not self.lattice[x, y, z]
@@ -138,13 +138,16 @@ class System(object):
     def run(self, Nsteps):
         self.E = self.tot_energy()
         self.N = self.tot_population()
+        energy = 0.0
+        population = 0.0
         for i in xrange(Nsteps):
             x = R.randint(0, self.lattice.Lx-1)
             y = R.randint(0, self.lattice.Ly-1)
             z = R.randint(0, self.lattice.Lz-1)
             self.flip(x, y, z)
-            if (i*100 % Nsteps) == 0:
-                print self.E
+            energy += self.E
+            population += self.N
+        return energy/Nsteps, population/Nsteps
 
     
 class Lattice(np.ndarray):
@@ -162,21 +165,24 @@ class Lattice(np.ndarray):
         """
         if dim > 3:
             raise AttributeError("Dimensions greater than 3 are not supported :(")
-        if dim != 3:
-            raise AttributeError("Dimensions other than 3 are not supported :( [yet!]")
+        #if dim != 3:
+        #    raise AttributeError("Dimensions other than 3 are not supported :( [yet!]")
+        if dim < 1:
+            raise AttributeError("Dimensions lower than 1 are not supported by reality :( [yet!]")
+
         if bc != "periodic" and bc != "free":
             raise AttributeError("Only periodic or free boundary conditions are allowed")
 
 
         helper = "Dimension is {0}, {1} will not be used"
 
-        if dim < 2 and Ly!= None:
+        if dim < 2:
+            if Ly != None: raise Warning(helper.format(dim, "Ly"))
             Ly = 1
-            raise Warning(helper.format(dim, "Ly"))
 
-        if dim < 3 and Lz!= None:
+        if dim < 3:
+            if Lz != None: raise Warning(helper.format(dim, "Lz"))
             Lz = 1
-            raise Warning(helper.format(dim, "Lz"))
         
         if dim > 1:
             if Ly == None:
@@ -187,7 +193,6 @@ class Lattice(np.ndarray):
                  Lz = Lx
         
         shape = (Lx, Ly, Lz)
-                 
         obj = np.ndarray.__new__(subtype, shape, bool, buffer, offset, strides,
                          order)
         
