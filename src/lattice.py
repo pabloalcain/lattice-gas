@@ -2,6 +2,7 @@ from __future__ import division
 import numpy as np
 import itertools as it
 import random as R
+import time
 
 class System(object):
     def __init__(self, lattice, interaction, T = 1.0, mu = 0.0):
@@ -129,6 +130,9 @@ class System(object):
         dn = - (self.lattice[x, y, z] - 0.5) * 2 
         de = dn * self.energy_if_occupied(x, y, z)
         du = de + self.mu * dn
+#        time.sleep(0.5)
+#        print "dn = {0}, de = {1}, du = {2}".format(dn, de, du)
+#        print "lat = {0}, mu = {1}".format(self.lattice[x, y, z], self.mu)
 
         if du < 0 or R.random() < np.exp(-du/self.T):
             self.lattice[x, y, z] = not self.lattice[x, y, z]
@@ -149,14 +153,15 @@ class System(object):
             population += self.N
         return energy/Nsteps, population/Nsteps
 
-    
+
 class Lattice(np.ndarray):
     """
     The lattice is a numpy array with some new methods and attributes.
     The "template" is taken from http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
     """
     def __new__(subtype, Lx, buffer=None, offset=0,
-                strides=None, order=None, dim=3, Ly=None, Lz=None, bc='periodic'):
+                strides=None, order=None, dim=3,
+                Ly=None, Lz=None, bc='periodic'):
         """
         Constructor: a square/cubic lattice. Set size and dimension of
         the lattice, as well as the boundary conditions.
@@ -218,7 +223,6 @@ class Lattice(np.ndarray):
     def random(self, p = 0.5):
         """
         Fill lattice randomly with probability p.
-        Not done yet, since I don't know how to cleanly set these values in the lattice
         """
         for (i, j, k) in it.product(range(self.Lx), range(self.Ly), range(self.Lz)):
             #I'm still surprised this construction works self[...]
