@@ -77,6 +77,7 @@ class System(object):
         """
 
         rmax = self.interaction.rmax
+        rmax2 = self.interaction.rmax2
         nearby = range(-rmax, rmax + 1)
         energy = 0
 
@@ -88,6 +89,7 @@ class System(object):
                     continue
                 dist = np.sqrt(i**2 + j**2 + k**2)
                 if dist > rmax: continue
+                dist = np.sqrt(i**2 + j**2 + k**2)
                 energy += self.interaction.V(dist)
 
         if self.lattice.dim == 2:
@@ -96,8 +98,10 @@ class System(object):
                 
                 if not self.lattice.get_status(x + i, y + j, 1):
                     continue
-                dist = np.sqrt(i**2 + j**2)
-                if dist > rmax: continue
+                dist = (i**2 + j**2)
+                if dist > rmax2: continue
+                #dist = np.sqrt(i**2 + j**2)
+
                 energy += self.interaction.V(dist)
 
         if self.lattice.dim == 1:
@@ -130,10 +134,6 @@ class System(object):
         dn = - (self.lattice[x, y, z] - 0.5) * 2 
         de = dn * self.energy_if_occupied(x, y, z)
         du = de + self.mu * dn
-#        time.sleep(0.5)
-#        print "dn = {0}, de = {1}, du = {2}".format(dn, de, du)
-#        print "lat = {0}, mu = {1}".format(self.lattice[x, y, z], self.mu)
-
         if du < 0 or R.random() < np.exp(-du/self.T):
             self.lattice[x, y, z] = not self.lattice[x, y, z]
             self.E+= de
@@ -247,14 +247,19 @@ class Interaction(object):
     """
     Interaction between two lattice sites.
     
-    The rmax is to draw the outer square/cube for each position of the
-    lattice. This way, we can only loop among the squares that are
+    For perfomance issues and typical usage of this code, the
+    interaction is defined as a function of r**2
+
+    The rmax is to draw the outer square/cube for each position of
+    the lattice. This way, we can only loop among the squares that are
     potentially interacting.
 
-    The potential V is a function that returns interaction given distance, for all
-    r less than rmax.
+    The potential V is a function that returns interaction given
+    distance, for all r less than rmax.
     
     Warning! For r > rmax, V is set to zero.
+
+
     """
     def __init__(self, V, rmax):
         """
@@ -262,6 +267,9 @@ class Interaction(object):
         """
         self.V = V
         self.rmax = rmax
+        self.rmax2 = rmax * rmax
+        if type(rmax) != int:
+            raise AttributeError("rmax must be an integer, in cell units")
         
     def set_V(self, V):
         """
@@ -274,6 +282,7 @@ class Interaction(object):
         Encapsulated setter of the maximum distance
         """
         self.rmax = rmax
+        self.rmax2 = rmax * rmax
 
     def get_V(self):
         """
