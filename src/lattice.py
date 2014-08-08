@@ -169,9 +169,7 @@ class Lattice(np.ndarray):
         Dimensions lower than 3 set "dangling" lengths equal to 1
         """
         if dim > 3:
-            raise AttributeError("Dimensions greater than 3 are not supported :(")
-        #if dim != 3:
-        #    raise AttributeError("Dimensions other than 3 are not supported :( [yet!]")
+            raise AttributeError("Dimensions greater than 3 are not supported :( [yet!]")
         if dim < 1:
             raise AttributeError("Dimensions lower than 1 are not supported by reality :( [yet!]")
 
