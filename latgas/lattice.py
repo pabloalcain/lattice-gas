@@ -87,9 +87,8 @@ class System(object):
                 
                 if not self.lattice.get_status(x + i, y + j, z + k):
                     continue
-                dist = np.sqrt(i**2 + j**2 + k**2)
+                dist = i**2 + j**2 + k**2
                 if dist > rmax: continue
-                dist = np.sqrt(i**2 + j**2 + k**2)
                 energy += self.interaction.V(dist)
 
         if self.lattice.dim == 2:
@@ -100,8 +99,6 @@ class System(object):
                     continue
                 dist = (i**2 + j**2)
                 if dist > rmax2: continue
-                #dist = np.sqrt(i**2 + j**2)
-
                 energy += self.interaction.V(dist)
 
         if self.lattice.dim == 1:
@@ -109,7 +106,7 @@ class System(object):
                 if (i == 0): continue
                 if not self.lattice.get_status(x + i, 1, 1):
                     continue
-                dist = abs(i)
+                dist = i**2
                 if dist > rmax: continue
                 energy += self.interaction.V(dist)
 
