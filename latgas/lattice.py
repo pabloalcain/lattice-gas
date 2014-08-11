@@ -81,6 +81,7 @@ class System(object):
         nearby = range(-rmax, rmax + 1)
         energy = 0
 
+
         if self.lattice.dim == 3:
             for (i, j, k) in it.product(nearby, nearby, nearby):
                 if (i == 0 and j == 0 and k == 0): continue
@@ -88,10 +89,12 @@ class System(object):
                 if not self.lattice.get_status(x + i, y + j, z + k):
                     continue
                 dist = i**2 + j**2 + k**2
-                if dist > rmax: continue
+                if dist > rmax2: continue
                 energy += self.interaction.V(dist)
+                return energy
 
-        if self.lattice.dim == 2:
+
+        elif self.lattice.dim == 2:
             for (i, j) in it.product(nearby, nearby):
                 if (i == 0 and j == 0): continue
                 
@@ -100,19 +103,19 @@ class System(object):
                 dist = (i**2 + j**2)
                 if dist > rmax2: continue
                 energy += self.interaction.V(dist)
+                return energy
 
-        if self.lattice.dim == 1:
+        elif self.lattice.dim == 1:
             for i in nearby:
                 if (i == 0): continue
                 if not self.lattice.get_status(x + i, 1, 1):
                     continue
                 dist = i**2
-                if dist > rmax: continue
+                if dist > rmax2: continue
                 energy += self.interaction.V(dist)
-
-        return energy
-
-        
+                return energy
+    
+        return 0
 
     def energy(self, x, y, z):
         """
@@ -127,8 +130,11 @@ class System(object):
         """
         Method to populate/empty a position. Implements MonteCarlo
         """
-        # Getting advantage of the autocast bool->integer in Python
-        dn = - (self.lattice[x, y, z] - 0.5) * 2 
+
+        if self.lattice[x, y, z]:
+            dn = -1
+        else:
+            dn = 1
         de = dn * self.energy_if_occupied(x, y, z)
         du = de + self.mu * dn
         if du < 0 or R.random() < np.exp(-du/self.T):
@@ -239,7 +245,7 @@ class Lattice(np.ndarray):
             return self[x, y, z]
         else:
             raise AttributeError("bc = {0} not implemented!".format(self.bc))
-
+        
 class Interaction(object):
     """
     Interaction between two lattice sites.
