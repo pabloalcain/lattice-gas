@@ -66,53 +66,48 @@ class System(object):
         """
         Calculate energy a given point would have *if* that position
         was occupied.
-
-        It does look pretty messed up, but I feel like there is
-        somewhere we need to mess it up. It's either here or in the
-        flip attempt.
-
-
-        Something I don't like: the splitting in 3 different yet
-        *very* similar methods.
         """
 
         rmax = self.interaction.rmax
         rmax2 = self.interaction.rmax2
-        nearby = range(-rmax, rmax + 1)
+        #sites nearby
+        nb = range(-rmax, rmax + 1)
         energy = 0
-
-        if self.lattice.dim == 3:
-            for (i, j, k) in it.product(nearby, nearby, nearby):
-                if (i == 0 and j == 0 and k == 0): continue
-                
-                if not self.lattice.get_status(x + i, y + j, z + k):
-                    continue
-                dist = i**2 + j**2 + k**2
-                if dist > rmax: continue
-                energy += self.interaction.V(dist)
-
-        if self.lattice.dim == 2:
-            for (i, j) in it.product(nearby, nearby):
-                if (i == 0 and j == 0): continue
-                
-                if not self.lattice.get_status(x + i, y + j, 1):
-                    continue
-                dist = (i**2 + j**2)
-                if dist > rmax2: continue
-                energy += self.interaction.V(dist)
-
-        if self.lattice.dim == 1:
-            for i in nearby:
-                if (i == 0): continue
-                if not self.lattice.get_status(x + i, 1, 1):
-                    continue
-                dist = i**2
-                if dist > rmax: continue
-                energy += self.interaction.V(dist)
-
-        return energy
-
+        d = self.lattice.dim
+        s = self.lattice.get_status
+        v = self.interaction.V
         
+        #sites that we should cycle through
+        if d == 3: cyc = it.product(nb, nb, nb)
+        elif d == 2: cyc = it.product(nb, nb, [0])
+        elif d == 1: cyc = it.product(nb, [0], [0])
+
+        for (i, j, k) in cyc:
+            if (i == 0 and j == 0 and k == 0): continue
+            xi = x + i
+            yj = y + j
+            zk = z + k
+            if self.lattice.bc == "periodic":
+                if xi >= self.lattice.Lx: xi -= self.lattice.Lx
+                elif xi < 0: xi += self.lattice.Lx
+                
+                if yj >= self.lattice.Ly: yj -= self.lattice.Ly
+                elif yj < 0: yj += self.lattice.Ly
+                
+                if zk >= self.lattice.Lz: zk -= self.lattice.Lz
+                elif zk < 0: zk += self.lattice.Lz
+
+            elif self.lattice.bc == "free":
+                if xi >= self.lattice.Lx or xi < 0: continue
+                if yj >= self.lattice.Ly or yj < 0: continue
+                if zk >= self.lattice.Lz or zk < 0: continue
+
+            if not self.lattice[xi, yj, zk]: continue
+            dist = i**2 + j**2 + k**2
+            if dist > rmax2: continue
+            energy += v(dist)
+        
+        return energy
 
     def energy(self, x, y, z):
         """
@@ -127,8 +122,11 @@ class System(object):
         """
         Method to populate/empty a position. Implements MonteCarlo
         """
-        # Getting advantage of the autocast bool->integer in Python
-        dn = - (self.lattice[x, y, z] - 0.5) * 2 
+
+        if self.lattice[x, y, z]:
+            dn = -1
+        else:
+            dn = 1
         de = dn * self.energy_if_occupied(x, y, z)
         du = de + self.mu * dn
         if du < 0 or R.random() < np.exp(-du/self.T):
@@ -142,9 +140,9 @@ class System(object):
         energy = 0.0
         population = 0.0
         for i in xrange(Nsteps):
-            x = R.randint(0, self.lattice.Lx-1)
-            y = R.randint(0, self.lattice.Ly-1)
-            z = R.randint(0, self.lattice.Lz-1)
+            x = int(self.lattice.Lx*R.random())
+            y = int(self.lattice.Ly*R.random())
+            z = int(self.lattice.Lz*R.random())
             self.flip(x, y, z)
             energy += self.E
             population += self.N
@@ -230,7 +228,7 @@ class Lattice(np.ndarray):
 
     def get_status(self, x, y, z):
         if self.bc == "periodic":
-            return self[x % self.Lx, y % self.Ly, z % self.Lz]
+            return self[x, y, z]
         
         elif self.bc == "free":
             if x < 0 or x >=self.Lx: return False
@@ -239,7 +237,7 @@ class Lattice(np.ndarray):
             return self[x, y, z]
         else:
             raise AttributeError("bc = {0} not implemented!".format(self.bc))
-
+        
 class Interaction(object):
     """
     Interaction between two lattice sites.

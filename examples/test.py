@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from numpy import *
-from pylab import *
+#from numpy import *
+#from pylab import *
 from latgas import lattice 
 from latgas.lattice import System, Lattice, Interaction
 
