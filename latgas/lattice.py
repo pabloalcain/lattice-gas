@@ -84,7 +84,25 @@ class System(object):
 
         for (i, j, k) in cyc:
             if (i == 0 and j == 0 and k == 0): continue
-            if not s(x + i, y + j, z + k): continue
+            xi = x + i
+            yj = y + j
+            zk = z + k
+            if self.lattice.bc == "periodic":
+                if xi >= self.lattice.Lx: xi -= self.lattice.Lx
+                elif xi < 0: xi += self.lattice.Lx
+                
+                if yj >= self.lattice.Ly: yj -= self.lattice.Ly
+                elif yj < 0: yj += self.lattice.Ly
+                
+                if zk >= self.lattice.Lz: zk -= self.lattice.Lz
+                elif zk < 0: zk += self.lattice.Lz
+
+            elif self.lattice.bc == "free":
+                if xi >= self.lattice.Lx or xi < 0: continue
+                if yj >= self.lattice.Ly or yj < 0: continue
+                if zk >= self.lattice.Lz or zk < 0: continue
+
+            if not self.lattice[xi, yj, zk]: continue
             dist = i**2 + j**2 + k**2
             if dist > rmax2: continue
             energy += v(dist)
@@ -210,7 +228,7 @@ class Lattice(np.ndarray):
 
     def get_status(self, x, y, z):
         if self.bc == "periodic":
-            return self[x % self.Lx, y % self.Ly, z % self.Lz]
+            return self[x, y, z]
         
         elif self.bc == "free":
             if x < 0 or x >=self.Lx: return False
