@@ -81,7 +81,7 @@ class System(object):
         if d == 3: cyc = it.product(nb, nb, nb)
         elif d == 2: cyc = it.product(nb, nb, [0])
         elif d == 1: cyc = it.product(nb, [0], [0])
-
+        
         for (i, j, k) in cyc:
             if (i == 0 and j == 0 and k == 0): continue
             xi = x + i
@@ -283,10 +283,10 @@ class Interaction(object):
         """
         Encapsulated getter of the interaction
         """
-        return V
+        return self.V
 
     def get_rmax(self):
         """
         Encapsulated getter of the maximum distance
         """
-        return rmax
+        return self.rmax
