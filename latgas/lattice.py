@@ -139,13 +139,13 @@ class pot(C.Structure):
         """
         Create the lookup tables in r and V pointers
         """
-        _r = np.linspace(self.rcore, self.rcut, self.npoints)
-        _V = self.inter(_r)
-        self.V = (C.c_double * (self.npoints) ) ()
-        self.r = (C.c_double * (self.npoints) ) ()
+        _r = np.linspace(self.rcore, 
+                         self.rcut, self.npoints)
+        self.V = ( C.c_double * (self.npoints) ) ()
+        self.r = ( C.c_double * (self.npoints) ) ()
         for i in range(self.npoints):
             self.r[i] = _r[i]
-            self.V[i] = _V[i]
+            self.V[i] = self.inter(_r[i])
         
     def set_V(self, inter):
         """

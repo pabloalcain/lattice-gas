@@ -8,6 +8,11 @@ import sys
 
 files = ["latgas/*"]
 
+lat_module = Extension('liblatgas', 
+                       sources = ['src/evolution.c'],
+                       libraries = ['m'],
+                      )
+
 setup(name = "Lattice Gas in 2D/3D",
       version = "0.1",
       description = "Lattice Gas implementation in Python/c",
@@ -26,4 +31,5 @@ The idea is to be able to set interactions as desired and work
 
 So far everything is implemented in Python; obviously, soon enough,
 calculation-heavy routines will be ported to c/c++
-""") 
+""",
+      ext_modules = [lat_module]) 

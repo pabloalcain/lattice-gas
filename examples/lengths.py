@@ -8,7 +8,7 @@ M_t = None
 E_t = None
 sizes = [100, 50, 30, 20, 10, 5]
 for sz in sizes:
-  inter = lambda r: -4 + r * 0
+  inter = lambda r: -4
   lattice = lat(sz, dim = 2)
   potential = pot(inter, 1.0, 5)
   sys = mdsys(lattice, potential)

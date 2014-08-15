@@ -3,3 +3,4 @@ old_files/data
 *.py~
 build/
 *~
+*.o
