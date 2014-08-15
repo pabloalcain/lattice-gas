@@ -1,6 +1,14 @@
 #include "evolution.h"
 #include <stdio.h>
 
+void run(mdsys *sys, int nsteps)
+{
+  int i;
+  for (i = 0; i < nsteps; i++) {
+    whole_lattice(sys);
+  }
+}
+
 void whole_lattice(mdsys *sys)
 {
   int i = 0;
@@ -14,8 +22,8 @@ void whole_lattice(mdsys *sys)
   
   N = Lx * Ly * Lz;
   /* of course, we don't go through every spin,
-   it's just so we do as many montecarlo steps as
-   sites in the lattice*/
+     it's just so we do as many montecarlo steps as
+     sites in the lattice */
   for (i = 0; i < N; i++) {
     x = rand() % Lx;
     y = rand() % Ly;

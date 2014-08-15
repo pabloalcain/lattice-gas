@@ -289,6 +289,17 @@ class mdsys(C.Structure):
             population += self.N
         return energy/Nsteps, population/Nsteps
 
+    def crun(self, Nsteps):
+        """
+        Wrapper to c function. Useful to find overheads
+
+        Ideal: Overheads << Execution for DT ~ Correlation time
+        """
+        
+        clib.run(C.byref(self), Nsteps)
+        
+
+
     def whole_lattice(self):
         """
         Attempt to flip Lx * Ly * Lz positions

@@ -11,6 +11,7 @@ files = ["latgas/*"]
 lat_module = Extension('liblatgas', 
                        sources = ['src/evolution.c'],
                        libraries = ['m'],
+                       extra_compile_args = ['-O3', '-g'],
                       )
 
 setup(name = "Lattice Gas in 2D/3D",
