@@ -6,7 +6,7 @@ import time
 import ctypes as C
 from math import ceil
 
-clib = C.CDLL("../liblatgas.so")
+clib = C.CDLL("liblatgas.so")
 
         
 
