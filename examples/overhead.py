@@ -22,14 +22,14 @@ sys.set_mu(8.0)
 sys.set_T(20.0)
 
 
-steps = range(1,1001)
+steps = range(1,201)
 Trun = []
 Tpy = []
 Tc = []
 for i in steps:
   print i
   t1 = time()
-  for j in range(i):
+  for j in xrange(i):
     sys.whole_lattice()
   t2 = time()
   Tpy.append(1000*(t2-t1))
