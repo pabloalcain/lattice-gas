@@ -5,11 +5,9 @@
 
 struct _mdsys {
   pot interaction;
-  int Lx, Ly, Lz;
   lat lattice;
   double T, mu;
   double E, N;
-  int dim;
 };
 typedef struct _mdsys mdsys;
 #endif

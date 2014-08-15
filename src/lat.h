@@ -3,8 +3,9 @@
 #include <stdbool.h>
 
 struct _lat {
-  bool*** site;
+  bool* site;
   int Lx, Ly, Lz;
+  int dim;
   bool periodic, free;
 };
 typedef struct _lat lat;
