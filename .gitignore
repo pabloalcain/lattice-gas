@@ -4,3 +4,5 @@ old_files/data
 build/
 *~
 *.o
+*.swp
+*.so
