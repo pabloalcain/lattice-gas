@@ -5,9 +5,6 @@ Script for installation of the python module.
 It also builds the c library
 """
 from distutils.core import setup, Extension
-#This is a list of files to install, and where
-#(relative to the 'root' dir, where setup.py is)
-#You could be more specific.
 
 files = ["latgas/*"]
 
