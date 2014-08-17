@@ -90,6 +90,9 @@ class Lattice(C.Structure):
     def random(self, p = 0.5):
         """
         Fill lattice randomly with probability p.
+
+        Warning! After calling this method, you should recalculate the
+        total energy & population if the lattice is part of a system.
         """
         for i in range(self.Lx * self.Ly * self.Lz):
             if R.random() < p: 
@@ -163,6 +166,10 @@ class Potential(C.Structure):
     def set_V(self, inter):
         """
         Encapsulated setter of the interaction
+
+        Warning! After calling this method, you should recalculate the
+        total energy if the lattice is part of a system.
+
         """
         self.inter = inter
         self.create_tables()
