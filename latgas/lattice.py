@@ -297,8 +297,6 @@ class System(C.Structure):
         Dummy run method, inform mean values
         """
         
-        #self.E = self.tot_energy()
-        #self.N = self.tot_population()
         energy = 0.0
         population = 0.0
         for _i in xrange(Nsteps):
