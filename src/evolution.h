@@ -4,14 +4,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
-#include "mdsys.h"
+#include "sys.h"
 
-void run(mdsys *sys, int nsteps);
-void whole_lattice(mdsys *sys);
-void flip(mdsys *sys, int x, int y, int z);
-double energy_if_occupied(mdsys *sys, int x, int y, int z);
-double energy(mdsys *sys, int x, int y, int z);
-bool get_status(mdsys *sys, int x, int y, int z);
-double v(mdsys *sys, int dist);
+void run(System *sys, int nsteps);
+void whole_lattice(System *sys);
+void flip(System *sys, int x, int y, int z);
+double energy_if_occupied(System *sys, int x, int y, int z);
+double energy(System *sys, int x, int y, int z);
+bool get_status(System *sys, int x, int y, int z);
+double v(System *sys, int dist);
 
 #endif

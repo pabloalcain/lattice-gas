@@ -9,5 +9,5 @@ struct _pot {
   double *r;
   double *V;
 };
-typedef struct _pot pot;
+typedef struct _pot Potential;
 #endif

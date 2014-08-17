@@ -8,5 +8,5 @@ struct _lat {
   int dim;
   bool periodic, free;
 };
-typedef struct _lat lat;
+typedef struct _lat Lattice;
 #endif

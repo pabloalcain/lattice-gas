@@ -12,7 +12,7 @@ OBJ=evolution.o
 default: liblatgas.so
 
 clean:
-	rm -f src/evolution.o
+	rm -f evolution.o latgas.e liblatgas.so
 
 # linker rule
 

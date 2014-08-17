@@ -2,16 +2,16 @@
 from numpy import *
 from pylab import *
 from latgas import lattice
-from latgas.lattice import mdsys, lat, pot
+from latgas.lattice import *
 
 M_t = None
 E_t = None
 sizes = [1000, 500, 200, 100]
 for sz in sizes:
   inter = lambda r: -4
-  lattice = lat(sz, dim = 2)
-  potential = pot(inter, 1.0, 5)
-  sys = mdsys(lattice, potential)
+  lattice = Lattice(sz, dim = 2)
+  potential = Potential(inter, 1.0, 5)
+  sys = System(lattice, potential)
   sys.set_mu(8.0)
   E = []
   N = []

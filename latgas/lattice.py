@@ -1,16 +1,24 @@
+"""
+Module for lattice gas model. It has inside 3 different classes:
+
+Lattice
+Potential
+System
+
+that are the basics of the model. System can be linked to different
+instances of Lattice and Potential
+"""
 from __future__ import division
 import numpy as np
-import itertools as it
 import random as R
-import time
 import ctypes as C
 from math import ceil
 
-clib = C.CDLL("liblatgas.so")
+CLIB = C.CDLL("liblatgas.so")
 
         
 
-class lat(C.Structure):
+class Lattice(C.Structure):
     """
     Basic structure for a lattice.
     """
@@ -30,32 +38,41 @@ class lat(C.Structure):
         
         Dimensions lower than 3 set "dangling" lengths equal to 1
         """
+
+        
         if dim > 3:
-            raise AttributeError("Dimensions greater than 3 are not supported :( [yet!]")
+            raise AttributeError(("Dimensions greater than 3 are "
+                                  "not supported :( [yet!]"))
         if dim < 1:
-            raise AttributeError("Dimensions lower than 1 are not supported by reality :( [yet!]")
+            raise AttributeError(("Dimensions lower than 1 are not "
+                                 "supported by reality :( [yet!]"))
 
         if bc != "periodic" and bc != "free":
-            raise AttributeError("Only periodic or free boundary conditions are allowed")
-
+            raise AttributeError(("Only periodic or free boundary "
+                                  "conditions are allowed"))
 
         helper = "Dimension is {0}, {1} will not be used"
-
-        if dim < 2:
-            if Ly != None: raise Warning(helper.format(dim, "Ly"))
+        
+        if dim == 1:
+            if Ly != None:
+                raise Warning(helper.format(dim, "Ly"))
+            if Lz != None:
+                raise Warning(helper.format(dim, "Lz"))
             Ly = 1
-
-        if dim < 3:
-            if Lz != None: raise Warning(helper.format(dim, "Lz"))
             Lz = 1
         
-        if dim > 1:
+        if dim == 2:
             if Ly == None:
-                Ly = Lx 
-        
-        if dim > 2:
-            if Lz == None: 
-                 Lz = Lx
+                Ly = Lx
+            if Lz != None:
+                raise Warning(helper.format(dim, "Lz"))
+            Lz = 1
+
+        if dim == 3:
+            if Ly == None:
+                Ly = Lx
+            if Lz == None:
+                Lz = Lx
 
         self.Lx = Lx 
         self.Ly = Ly
@@ -65,12 +82,9 @@ class lat(C.Structure):
         self.dim = dim
         self.bc = bc
         
-        if bc == "periodic":
-            self.periodic = True
-            self.free = False
-        if bc == "free":
-            self.periodic = False
-            self.free = True
+        self.periodic = (bc == "periodic")
+        self.free = (bc == "free")
+        super(Lattice, self).__init__()
 
 
     def random(self, p = 0.5):
@@ -86,18 +100,15 @@ class lat(C.Structure):
         
 
     def get_status(self, x, y, z):
-        if self.bc == "periodic":
-            return self[x, y, z]
+        """
+        Get status of site. It either belongs to the lattice or we
+        need to apply the boundary conditions
+
+        Wrapper to c function
+        """
+        CLIB.get_status(self, x, y, z)
         
-        elif self.bc == "free":
-            if x < 0 or x >=self.Lx: return False
-            if y < 0 or y >=self.Ly: return False
-            if z < 0 or z >=self.Lz: return False
-            return self[x, y, z]
-        else:
-            raise AttributeError("bc = {0} not implemented!".format(self.bc))
-        
-class pot(C.Structure):
+class Potential(C.Structure):
     """
     Interaction between two lattice sites.
     
@@ -129,11 +140,15 @@ class pot(C.Structure):
         """
         self.rcut = rcut
         self.rmax = int(ceil(rcut))
+        self.rmax2 = self.rmax**2
         self.rcore = rcore
         self.invdr = (npoints - 1) / (rcut - rcore)
         self.inter = inter
         self.npoints = npoints
+        self.V = ( C.c_double * (self.npoints) ) ()
+        self.r = ( C.c_double * (self.npoints) ) ()
         self.create_tables()
+        super(Potential, self).__init__()
 
     def create_tables(self):
         """
@@ -141,8 +156,6 @@ class pot(C.Structure):
         """
         _r = np.linspace(self.rcore, 
                          self.rcut, self.npoints)
-        self.V = ( C.c_double * (self.npoints) ) ()
-        self.r = ( C.c_double * (self.npoints) ) ()
         for i in range(self.npoints):
             self.r[i] = _r[i]
             self.V[i] = self.inter(_r[i])
@@ -152,7 +165,7 @@ class pot(C.Structure):
         Encapsulated setter of the interaction
         """
         self.inter = inter
-        self.create_tables(inter)
+        self.create_tables()
         
         
     def set_rmax(self, rmax):
@@ -175,13 +188,13 @@ class pot(C.Structure):
         return self.rmax
 
 
-class mdsys(C.Structure):
+class System(C.Structure):
     """
     Structure for the lattice gas system
     """
 
-    _fields_ = [("interaction", pot),
-                ("lattice", lat),
+    _fields_ = [("interaction", Potential),
+                ("lattice", Lattice),
                 ("T", C.c_double),
                 ("mu", C.c_double),
                 ("E", C.c_double),
@@ -198,8 +211,10 @@ class mdsys(C.Structure):
         self.mu = mu
         self.E = self.tot_energy()
         self.N = self.tot_population()
-	if random == None: random = 1000000 * R.random()
+        if random == None: 
+            random = 1000000 * R.random()
         self.random = int(random)
+        super(System, self).__init__()
     
     def set_T(self, T):
         """
@@ -259,7 +274,7 @@ class mdsys(C.Structure):
         Wrapper to c function.
 
         """
-        return clib.energy_if_occupied(C.byref(self), x, y, z)
+        return CLIB.energy_if_occupied(C.byref(self), x, y, z)
         
         
     def energy(self, x, y, z):
@@ -268,14 +283,14 @@ class mdsys(C.Structure):
         
         Wrapper to c function.
         """
-        return clib.energy(C.byref(self), x, y, z)
+        return CLIB.energy(C.byref(self), x, y, z)
     
     def flip(self, x, y, z):
         """
         Method to populate/empty a position. Implements MonteCarlo
         """
 
-        clib.flip(C.byref(self), x, y, z)
+        CLIB.flip(C.byref(self), x, y, z)
     
     def run(self, Nsteps):
         """
@@ -286,7 +301,7 @@ class mdsys(C.Structure):
         #self.N = self.tot_population()
         energy = 0.0
         population = 0.0
-        for i in xrange(Nsteps):
+        for _i in xrange(Nsteps):
             self.whole_lattice()
             energy += self.E
             population += self.N
@@ -299,7 +314,7 @@ class mdsys(C.Structure):
         Ideal: Overheads << Execution for DT ~ Correlation time
         """
         
-        clib.run(C.byref(self), Nsteps)
+        CLIB.run(C.byref(self), Nsteps)
         
 
 
@@ -310,4 +325,4 @@ class mdsys(C.Structure):
         Wrapper to c function
         """
         
-        clib.whole_lattice(C.byref(self))
+        CLIB.whole_lattice(C.byref(self))

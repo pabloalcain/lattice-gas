@@ -1,7 +1,7 @@
 #include "evolution.h"
 #include <stdio.h>
 
-void run(mdsys *sys, int nsteps)
+void run(System *sys, int nsteps)
 {
   int i;
   for (i = 0; i < nsteps; i++) {
@@ -9,7 +9,7 @@ void run(mdsys *sys, int nsteps)
   }
 }
 
-void whole_lattice(mdsys *sys)
+void whole_lattice(System *sys)
 {
   if (sys->random != 0) {
     srand(sys->random);
@@ -36,7 +36,7 @@ void whole_lattice(mdsys *sys)
   }
 }
 
-void flip(mdsys *sys, int x, int y, int z)
+void flip(System *sys, int x, int y, int z)
 {
   int dn, de, du;
   int Lx, Ly;
@@ -58,7 +58,7 @@ void flip(mdsys *sys, int x, int y, int z)
   }
 }
 
-double energy_if_occupied(mdsys *sys, int x, int y, int z)
+double energy_if_occupied(System *sys, int x, int y, int z)
 {
   int i, j, k;
   int imax, jmax, kmax;
@@ -93,7 +93,7 @@ double energy_if_occupied(mdsys *sys, int x, int y, int z)
   return energy;
 }
 
-double energy(mdsys *sys, int x, int y, int z)
+double energy(System *sys, int x, int y, int z)
 {
   int Lx, Ly;
   Lx = sys->lattice.Lx;
@@ -103,7 +103,7 @@ double energy(mdsys *sys, int x, int y, int z)
   return energy_if_occupied(sys, x, y, z);
 }
    
-bool get_status(mdsys *sys, int x, int y, int z)
+bool get_status(System *sys, int x, int y, int z)
 {
   int Lx, Ly, Lz;
   Lx = sys->lattice.Lx;
@@ -137,7 +137,7 @@ bool get_status(mdsys *sys, int x, int y, int z)
   return sys->lattice.site[x + y * Lx + z * Lx * Ly];
 }
 
-double v(mdsys *sys, int dist)
+double v(System *sys, int dist)
 {
   double invdr, rcore;
   int idx;

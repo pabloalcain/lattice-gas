@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-  mdsys sys;
+  System sys;
   int i, nsites;  
 
   sys.interaction.r = (double *)malloc(5*sizeof(double));
