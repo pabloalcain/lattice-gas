@@ -6,7 +6,7 @@ from latgas.lattice import mdsys, lat, pot
 
 M_t = None
 E_t = None
-sizes = [100, 50, 30, 20, 10, 5]
+sizes = [1000, 500, 200, 100]
 for sz in sizes:
   inter = lambda r: -4
   lattice = lat(sz, dim = 2)
@@ -15,7 +15,7 @@ for sz in sizes:
   sys.set_mu(8.0)
   E = []
   N = []
-  temp = linspace(4, 1.1, 30)
+  temp = linspace(2.5, 2.0, 26)
   for i in temp:
     print i
     sys.set_T(i)
@@ -32,3 +32,6 @@ for sz in sizes:
   else:
     E_t = vstack([E_t, E])
     M_t = vstack([M_t, M])
+for i in M_t:
+  plot(temp, i)
+legend([str(i) for i in sizes])

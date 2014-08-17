@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
 CC=gcc
-CFLAGS=-Wall -g -O3 -ffast-math -fomit-frame-pointer -fPIC
+CFLAGS=-Wall -pg -O3 -ffast-math -fPIC #-fomit-frame-pointer
 LDLIBS=-lm
 
 # list of source files
@@ -19,6 +19,8 @@ clean:
 liblatgas.so: $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ -shared $(LDLIBS)
 
+latgas.e: $(OBJ) sim.c
+	$(CC) -o $@ $(CFLAGS) $^ $(LDLIBS)
 # compilation
 
 %.o: %.c

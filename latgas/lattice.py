@@ -185,9 +185,10 @@ class mdsys(C.Structure):
                 ("T", C.c_double),
                 ("mu", C.c_double),
                 ("E", C.c_double),
-                ("N", C.c_double)]
+                ("N", C.c_double),
+                ("random", C.c_int)]
     
-    def __init__(self, lattice, interaction, T = 1.0, mu = 0.0):
+    def __init__(self, lattice, interaction, T = 1.0, mu = 0.0, random = None):
         """
         Constructor: give the lattice and thermodynamic info
         """
@@ -197,6 +198,8 @@ class mdsys(C.Structure):
         self.mu = mu
         self.E = self.tot_energy()
         self.N = self.tot_population()
+	if random == None: random = 1000000 * R.random()
+        self.random = int(random)
     
     def set_T(self, T):
         """

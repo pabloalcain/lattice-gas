@@ -8,6 +8,7 @@ struct _mdsys {
   lat lattice;
   double T, mu;
   double E, N;
+  int random;
 };
 typedef struct _mdsys mdsys;
 #endif

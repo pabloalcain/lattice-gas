@@ -11,6 +11,10 @@ void run(mdsys *sys, int nsteps)
 
 void whole_lattice(mdsys *sys)
 {
+  if (sys->random != 0) {
+    srand(sys->random);
+    sys->random = 0;
+  }
   int i = 0;
   int N;
   int x, y, z;
@@ -76,10 +80,10 @@ double energy_if_occupied(mdsys *sys, int x, int y, int z)
       for (k = -kmax; k <= kmax; k++) {
         if (i == 0 && j == 0 && k == 0)
 	  continue;
-        if (!get_status(sys, x + i, y + j, z + k)) 
-	  continue;
 	dist = i * i + j * j + k * k;
 	if (dist > rcutsq)
+	  continue;
+        if (!get_status(sys, x + i, y + j, z + k)) 
 	  continue;
 	dist = sqrt(dist);
         energy += v(sys, dist);
