@@ -2,3 +2,7 @@ old_files/data
 *.pyc
 *.py~
 build/
+*~
+*.o
+*.swp
+*.so

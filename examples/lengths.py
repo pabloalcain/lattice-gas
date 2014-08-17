@@ -1,25 +1,26 @@
 #!/usr/bin/env python
 from numpy import *
 from pylab import *
-from lattice import System, Lattice, Interaction
+from latgas import lattice
+from latgas.lattice import *
 
 M_t = None
 E_t = None
-sizes = [100, 50, 30, 20, 10, 5]
+sizes = [1000, 500, 200, 100]
 for sz in sizes:
   inter = lambda r: -4
-  lat = Lattice(sz, dim = 2)
-  pot = Interaction(inter, 1)
-  sys = System(lat, pot)
+  lattice = Lattice(sz, dim = 2)
+  potential = Potential(inter, 1.0, 5)
+  sys = System(lattice, potential)
   sys.set_mu(8.0)
   E = []
   N = []
-  temp = linspace(4, 1.1, 30)
+  temp = linspace(2.5, 2.0, 26)
   for i in temp:
     print i
     sys.set_T(i)
-    ee, nn = sys.run(1000 * sz**2)
-    ee, nn = sys.run(1000 * sz**2)
+    ee, nn = sys.run(1000)
+    ee, nn = sys.run(1000)
     E.append(ee)
     N.append(nn)
   E = array(E); N = array(N)
@@ -31,3 +32,6 @@ for sz in sizes:
   else:
     E_t = vstack([E_t, E])
     M_t = vstack([M_t, M])
+for i in M_t:
+  plot(temp, i)
+legend([str(i) for i in sizes])
