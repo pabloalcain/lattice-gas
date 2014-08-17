@@ -1,7 +1,10 @@
 #!/usr/bin/env python
+"""
+Script for installation of the python module.
+
+It also builds the c library
+"""
 from distutils.core import setup, Extension
-from os import environ
-import sys
 #This is a list of files to install, and where
 #(relative to the 'root' dir, where setup.py is)
 #You could be more specific.
