@@ -15,6 +15,9 @@ import ctypes as C
 from math import ceil
 
 CLIB = C.CDLL("liblatgas.so")
+CLIB.energy.restype = C.c_double
+CLIB.energy_if_occupied.restype = C.c_double
+CLIB.get_status = C.c_bool
 
         
 
@@ -109,7 +112,7 @@ class Lattice(C.Structure):
 
         Wrapper to c function
         """
-        CLIB.get_status(self, x, y, z)
+        return CLIB.get_status(self, x, y, z)
         
 class Potential(C.Structure):
     """
@@ -251,7 +254,7 @@ class System(C.Structure):
         """
         Calculate energy cycling through every position in the lattice
         """
-        energy = 0
+        energy = 0.0
         Lx = self.lattice.Lx
         Ly = self.lattice.Ly
         Lz = self.lattice.Lz
