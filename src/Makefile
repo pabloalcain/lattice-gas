@@ -1,8 +1,8 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
 CC=gcc
-CFLAGS=-Wall -pg -O3 -ffast-math -fPIC #-fomit-frame-pointer
-LDLIBS=-lm
+CFLAGS=-Wall -pg -O3 -ffast-math -fPIC -fopenmp
+LDLIBS=-lm -lgomp
 
 # list of source files
 SRC=evolution.c

@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <omp.h>
+
 #include "sys.h"
+
 
 void run(System *sys, int nsteps);
 void whole_lattice(System *sys);

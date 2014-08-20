@@ -1,5 +1,4 @@
 #include "evolution.h"
-#include <stdio.h>
 
 void run(System *sys, int nsteps)
 {
@@ -75,6 +74,8 @@ double energy_if_occupied(System *sys, int x, int y, int z)
     jmax = rcut;
   if (sys->lattice.dim > 2) 
     kmax = rcut;
+  
+#pragma omp parallel for
   for (i = -imax; i <= imax; i++) {
     for (j = -jmax; j <= jmax; j++) {
       for (k = -kmax; k <= kmax; k++) {
